@@ -15,7 +15,8 @@ module.exports = (app) => {
     app.delete(     '/api/thread/:id'                   , ThreadController.delete);
 
     //Comment routes
-    app.post(       '/api/thread/:id/comment'           , CommentController.createInThread);        //Notice, the id in this route represents a thread id, not a comment id
+    app.post(       '/api/thread/:id/comment'           , CommentController.createInThread);        // <= Notice, the id in this route represents a thread id, not a comment id
+    app.post(       '/api/comment/:id/comment'          , CommentController.createInComment);
     app.delete(     '/api/comment/:id'                  , CommentController.delete);
 
 
