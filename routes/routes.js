@@ -1,9 +1,17 @@
-const ExampleController = require('../controllers/example_controller.js')
+const ExampleController = require('../controllers/example_controller.js');
+const ThreadController = require('../controllers/thread_controller.js');
 
 module.exports = (app) => {
 
-    //Routes
-    app.get('/api/penguin', ExampleController.example);
+    //Example routes
+    app.get(        '/api/penguin'      , ExampleController.example);
+
+    //Thread routes
+    app.post(       '/api/thread'       , ThreadController.create);
+    app.get(        '/api/thread/:id'   , ThreadController.readOne);
+    app.get(        '/api/thread'       , ThreadController.readAll);
+    app.put(     '/api/thread/:id'   , ThreadController.update);
+    app.delete(     '/api/thread/:id'   , ThreadController.delete);
 
     /*
         ######################
