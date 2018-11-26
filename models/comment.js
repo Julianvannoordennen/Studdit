@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
-const Comment = require('../models/comment');
 const Schema = mongoose.Schema;
 
-//Thread schema
-const ThreadSchema = new Schema({
+//Comment schema
+const CommentSchema = new Schema({
     username: {
-        required: true,
-        type: String
-    },
-    title: {
         required: true,
         type: String
     },
@@ -22,7 +17,7 @@ const ThreadSchema = new Schema({
     }]
 });
 
-//Get thread API
-const Thread = mongoose.model('thread', ThreadSchema);
+//Get comment API
+const Comment = mongoose.model('comment', CommentSchema);
 
-module.exports = Thread;
+module.exports = Comment;

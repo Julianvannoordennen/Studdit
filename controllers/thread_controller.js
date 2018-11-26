@@ -2,6 +2,7 @@ const Thread = require('../models/thread');
 
 module.exports = {
 
+    //Create a new thread
     create(req, res, next) {
 
         //Get body from request
@@ -17,6 +18,7 @@ module.exports = {
             .catch(next);
     },
 
+    //Read one thread
     readOne(req, res, next) {
 
         //Get id from request
@@ -25,6 +27,9 @@ module.exports = {
         //Read thread by id
         Thread.findById(id)
 
+            //Load comment references
+            .populate('comments')
+
             //Return thread
             .then(thread => res.send(thread))
 
@@ -32,10 +37,11 @@ module.exports = {
             .catch(next);
     },
 
+    //Read all threads
     readAll(req, res, next) {
         
-        //Read all threads
-        Thread.find({})
+        //Read all threads without comments
+        Thread.find({}, { comments: 0 })
 
             //Return threads
             .then(threads => res.send(threads))
@@ -44,6 +50,7 @@ module.exports = {
             .catch(next);
     },
 
+    //Update one thread
     update(req, res, next) {
         
         //Get body and id from request
@@ -63,6 +70,7 @@ module.exports = {
             .catch(next);
     },
 
+    //Delete one thread
     delete(req, res, next) {
 
         //Get id from request
