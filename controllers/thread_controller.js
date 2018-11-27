@@ -27,6 +27,9 @@ module.exports = {
         //Read thread by id
         Thread.findById(id)
 
+            //Sort by positive / negative vote balance
+            .sort({ "votes.count": 1 })
+
             //Load comment references
             .populate('comments')
 
@@ -138,51 +141,3 @@ function vote(req, res, next) {
         //Error while editting vote
         .catch(next);
 }
-
-/*
-
-//Upvote thread
-    upVote(req, res, next) {
-        
-        //Manipulate body
-        let { body } = req, { id } = req.params;
-
-        //Get thread by id
-        Thread.findById(id, { upvotes: 1, downvotes: 1 })
-            
-            //Check if name exists in thread
-            .then(thread => {
-                
-                //Check if the vote is inside
-                let myUpvote = thread.upvotes.filter(vote => { return vote.username === body.username });
-                if (myUpvote.length === 0) {
-                    
-                    //Didn't found comment, create a new one
-                    thread.upvotes.push(body);
-
-                    //Check if there is a downvote
-                    let myDownvote = thread.downvotes.filter(vote => { return vote.username === body.username });
-                    if (myUpvote.length === 1) {
-
-                    //Save the document and return it
-                    thread.save().then(thread =>  res.send(thread));
-                
-                } else {
-
-                    //Return current state
-                    res.send(thread);
-                }                
-            })
-                
-            //Error while deleting thread from database
-            .catch(next);       
-    },
-
-    //Downvote thread
-    downVote(req, res, next) {
-        
-        //Manipulate body and execute helper method
-        req.body.positive = false;
-    }
-
-    */

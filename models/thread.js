@@ -43,6 +43,10 @@ ThreadSchema.virtual('downvotes').get(function() {
     return votes;
 });
 
+ThreadSchema.virtual('votebalance').get(function() {
+    return this.upvotes - this.downvotes;
+});
+
 //Get thread API
 const Thread = mongoose.model('thread', ThreadSchema);
 
