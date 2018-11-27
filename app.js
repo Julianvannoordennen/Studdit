@@ -3,6 +3,8 @@ const app = express();
 const mongoose = require('mongoose')
 const routes = require('./routes/routes');
 const bodyParser = require('body-parser')
+const neo4j = require('neo4j-driver').v1;
+const neo = require('./neo4j_setup');
 
 //Select default mongoose promise
 mongoose.Promise = global.Promise;
