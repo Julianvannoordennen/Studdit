@@ -14,7 +14,18 @@ if (process.env.NODE_ENV !== 'test') {
 } else {
     console.log(`Variable NODE_ENV is ${process.env.NODE_ENV}, application runs with the test database`);
 }
- 
+
+neo.driver = neo4j.driver(
+    'bolt://hobby-miglodfghkjagbkedgoebfbl.dbs.graphenedb.com:24786', 
+    neo4j.auth.basic('new-user', 'b.s2Rdsjueq3Ui.jmeyP12EhOYHIATF')
+);
+
+process.on('exit', function() {
+    neo.driver.close();
+});
+
+
+
 //Body parser middleware, processes incoming JSON bodies
 app.use(bodyParser.json());
 
