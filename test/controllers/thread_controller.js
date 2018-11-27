@@ -86,4 +86,42 @@ describe('Thread controller', () => {
             });   
         });     
     });  
+
+    it('upvotes a single thread when using PUT /api/thread/:id/upvote', done => {
+        new Thread ({ username: "username_test", title: "title_test", content: "content_test" }).save().then(thread => {
+            request(app)
+                .put(`/api/thread/${thread._id}/upvote`)
+                .send({ username: "voter_test" })
+                .then(() => { return Thread.findOne({_id: thread._id})})
+                .then(result => {
+                    
+                //Assert data
+                assert(result.votes.length === 1);
+                assert(result.votes[0].username === "voter_test");
+                assert(result.votes[0].positive === "true");
+                assert(result.upvotes === 1);
+                assert(result.downvotes === 0);
+                done();
+            });   
+        });     
+    });  
+
+    it('downvotes a single thread when using PUT /api/thread/:id/upvote', done => {
+        new Thread ({ username: "username_test", title: "title_test", content: "content_test" }).save().then(thread => {
+            request(app)
+                .put(`/api/thread/${thread._id}/downvote`)
+                .send({ username: "voter_test" })
+                .then(() => { return Thread.findOne({_id: thread._id})})
+                .then(result => {
+                    
+                //Assert data
+                assert(result.votes.length === 1);
+                assert(result.votes[0].username === "voter_test");
+                assert(result.votes[0].positive === "false");
+                assert(result.upvotes === 0);
+                assert(result.downvotes === 1);
+                done();
+            });   
+        });     
+    }); 
 });

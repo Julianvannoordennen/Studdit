@@ -65,5 +65,57 @@ module.exports = {
                 
             //Error while pulling comment from database
             .catch(next);
+    },
+
+    //Upvote thread
+    upVote(req, res, next) {
+        
+        //Manipulate body and execute helper method
+        req.body.positive = true;
+        vote(req, res, next);        
+    },
+
+    //Downvote thread
+    downVote(req, res, next) {
+        
+        //Manipulate body and execute helper method
+        req.body.positive = false;
+        vote(req, res, next); 
     }
+}
+
+//Vote helper method for downvote and upvote
+function vote(req, res, next) {
+
+    //Get body and id
+    let { body } = req, { id } = req.params;
+
+    //Get comment by id
+    Comment.findById(id, { votes: 1 })
+        
+        //Check if name exists in comment
+        .then(comment => {
+            let votes = comment.votes.filter(vote => { return vote.username === body.username });
+            
+            //Check if the vote is inside
+            if (votes.length === 1)
+                
+                //Found comment, edit the existing one
+                votes[0].positive = body.positive;
+
+            else
+                
+                //Didn't found comment, create a new one
+                comment.votes.push(body);
+
+            //Save the document
+            comment.save().then(comment => {
+                
+                //Return saved document
+                res.send(comment);
+            });
+        })
+            
+        //Error while editting vote
+        .catch(next);
 }

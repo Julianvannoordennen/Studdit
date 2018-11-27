@@ -114,9 +114,9 @@ function vote(req, res, next) {
         
         //Check if name exists in thread
         .then(thread => {
-            
-            //Check if the vote is inside
             let votes = thread.votes.filter(vote => { return vote.username === body.username });
+
+            //Check if the vote is inside
             if (votes.length === 1)
                 
                 //Found comment, edit the existing one
@@ -135,7 +135,7 @@ function vote(req, res, next) {
             });
         })
             
-        //Error while deleting thread from database
+        //Error while editting vote
         .catch(next);
 }
 

@@ -13,13 +13,15 @@ module.exports = (app) => {
     app.get(        '/api/thread'                       , ThreadController.readAll);
     app.put(        '/api/thread/:id'                   , ThreadController.update);
     app.delete(     '/api/thread/:id'                   , ThreadController.delete);
-    app.put(        '/api/thread/:id/upvote'            , ThreadController.upVote)
-    app.put(        '/api/thread/:id/downvote'          , ThreadController.downVote)
+    app.put(        '/api/thread/:id/upvote'            , ThreadController.upVote);
+    app.put(        '/api/thread/:id/downvote'          , ThreadController.downVote);
 
     //Comment routes
     app.post(       '/api/thread/:id/comment'           , CommentController.createInThread);        // <= Notice, the id in this route represents a thread id, not a comment id
     app.post(       '/api/comment/:id/comment'          , CommentController.createInComment);
     app.delete(     '/api/comment/:id'                  , CommentController.delete);
+    app.put(        '/api/comment/:id/upvote'           , CommentController.upVote);
+    app.put(        '/api/comment/:id/downvote'         , CommentController.downVote);
 
 
     /*
