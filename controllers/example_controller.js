@@ -3,7 +3,7 @@ const Example = require('../models/example');
 module.exports = {
 
     example(req, res) {
-        Example.find({}).then((penguins) => {
+        Example.find({"name": "King Penguin"}).then((penguins) => {
             res.send(penguins);
         });
     }

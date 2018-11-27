@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const autopopulate = require('mongoose-autopopulate');
 const Schema = mongoose.Schema;
 
 //Comment schema
-const CommentSchema = new Schema({
+let CommentSchema = new Schema({
     username: {
         required: true,
         type: String
@@ -13,9 +14,13 @@ const CommentSchema = new Schema({
     },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'comment'
+        ref: 'comment',
+        autopopulate: true
     }]
 });
+
+//Use auto populator middleware for comments
+CommentSchema.plugin(autopopulate);
 
 //Get comment API
 const Comment = mongoose.model('comment', CommentSchema);

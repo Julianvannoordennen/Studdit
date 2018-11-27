@@ -14,7 +14,7 @@ module.exports = {
         //Create comment
         Comment.create(body)
 
-            //Update thread with reference
+            //Update existing thread with reference
             .then(comment => { 
                 result = comment;
                 return Thread.findOneAndUpdate({ _id: id }, { $push: { comments: { _id: comment._id }}}, { new: true });
@@ -23,7 +23,31 @@ module.exports = {
             //Return created comment
             .then(() => res.send(result))
 
-            //Error while creating thread in database
+            //Error while creating comment in database
+            .catch(next);
+    },
+
+    //Create a new comment inside another comment
+    createInComment(req, res, next) {
+
+        //Get body and comment id from request
+        const { id } = req.params;
+        const { body } = req;
+        let result;
+
+        //Create comment
+        Comment.create(body)
+
+            //Update existing comment with reference
+            .then(comment => { 
+                result = comment;
+                return Comment.findOneAndUpdate({ _id: id }, { $push: { comments: { _id: comment._id }}}, { new: true });
+            })
+
+            //Return created comment
+            .then(() => res.send(result))
+
+            //Error while creating comment in database
             .catch(next);
     },
 

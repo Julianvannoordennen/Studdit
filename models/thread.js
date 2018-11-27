@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Comment = require('../models/comment');
+const VoteSchema = require('./vote');
 const Schema = mongoose.Schema;
 
 //Thread schema
@@ -19,7 +19,28 @@ const ThreadSchema = new Schema({
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'comment'
-    }]
+    }],
+    votes: [ VoteSchema ]
+}, {
+    toObject: {
+        virtuals: true
+    },
+    toJSON: {
+        virtuals: true 
+    }
+});
+
+//Create virtual attributes
+ThreadSchema.virtual('upvotes').get(function() {
+    let votes = 0;
+    this.votes.filter(vote => {  if (vote.positive == "true") { votes++;} });
+    return votes;
+});
+
+ThreadSchema.virtual('downvotes').get(function() {
+    let votes = 0;
+    this.votes.filter(vote => {  if (vote.positive == "false") { votes++;} });
+    return votes;
 });
 
 //Get thread API
