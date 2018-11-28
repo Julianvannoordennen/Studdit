@@ -1,5 +1,7 @@
 const ExampleController = require('../controllers/example_controller.js')
 const UsersController = require('../controllers/user_controller')
+const FriendsController = require('../controllers/friends_controller')
+
 
 module.exports = (app) => {
 
@@ -8,10 +10,11 @@ module.exports = (app) => {
 
     //User routes
     app.post('/api/users', UsersController.create)
-    app.put('/api/users/:id', UsersController.setUser)
+    app.put('/api/users', UsersController.editPassword)
+    app.delete('/api/users', UsersController.deleteUser)
 
     //POST friendship
-
+    app.post('/api/friends', FriendsController.createFriendship)
 
     /*
         ######################

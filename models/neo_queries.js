@@ -1,67 +1,42 @@
 
-function createUser(session, user, password) {
+function createUser(session, user) {
     let queries = []
 
     queries.push(
-        session.run('MERGE (p: Person {name: $name, password: $password}) ' +
+        session.run('MERGE (p: Person {name: $name}) ' +
                     'RETURN p',
                     {
-                        name: user.name,
-                        password: user.password
+                        name: user.name
                     })
     )
 
     return Promise.all(queries);
 }
 
-function changePassword(session, user, oldPassword, newPassword){
-    
+function createFriendship(session, userA, userB){
+
+    return session.run('MATCH (personA: Person {name: $nameA}), (personB: Person {name: $nameB}) ' +
+                        'CREATE (personA)-[f:FRIENDS]->(personB) ' +
+                        'CREATE (personB)-[f:FRIENDS]->(personA) ' +
+                        'RETURN personA, r, personB',
+                        {
+                            nameA: userA.name,
+                            nameB: userB.name
+                        });
 }
 
-
-
-
-function retrieveLikes(session, userName) {
-    return session.run(
-        'MATCH (p: Person)-[:Likes]->(other: Person) ' + 
-        'WHERE p.name = $name ' +
-        'RETURN other.name',
-        {
-            name: userName
-        }
-    );
-}
-
-
-function addLike(session, userName, otherName) {
-    return session.run(
-        'MATCH (p: Person {name: $name}), (o:Person {name: $other}) ' + 
-        'MERGE (p)-[r:Likes]->(o) ' +
-        'RETURN p, r, o',
-        {
-            name: userName,
-            other: otherName
-        }
-    );
-}
-
-
-function retrieveSuggestions(session, userName) {
-    return session.run(
-        'MATCH (p: Person {name: $name})-[:HasHobby]->(h: Hobby), ' +
-        '(o: Person)-[:HasHobby]->(h)' + 
-        'RETURN o.name',
-        {
-            name: userName
-        }
-    );
+function deleteUser(session, user){
+    return session.run('MATCH(p: Person) ' +
+                        'WHERE p.name = $name ' + 
+                        'DETACH DELETE p',
+                        {
+                            name: user.name
+                        })
 }
 
 
 module.exports = {
     createUser: createUser,
-    getList: getList,
-    retrieveLikes: retrieveLikes,
-    addLike: addLike,
-    retrieveSuggestions: retrieveSuggestions,
+    createFriendship: createFriendship,
+    deleteUser: deleteUser
 }
