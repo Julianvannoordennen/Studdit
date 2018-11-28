@@ -13,18 +13,6 @@ function createUser(session, user) {
     return Promise.all(queries);
 }
 
-function createFriendship(session, userA, userB){
-
-    return session.run('MATCH (personA: Person {name: $nameA}), (personB: Person {name: $nameB}) ' +
-                        'CREATE (personA)-[f:FRIENDS]->(personB) ' +
-                        'CREATE (personB)-[f:FRIENDS]->(personA) ' +
-                        'RETURN personA, r, personB',
-                        {
-                            nameA: userA.name,
-                            nameB: userB.name
-                        });
-}
-
 function deleteUser(session, user){
     return session.run('MATCH(p: Person) ' +
                         'WHERE p.name = $name ' + 
@@ -37,6 +25,5 @@ function deleteUser(session, user){
 
 module.exports = {
     createUser: createUser,
-    createFriendship: createFriendship,
     deleteUser: deleteUser
 }

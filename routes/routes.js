@@ -15,6 +15,7 @@ module.exports = (app) => {
 
     //POST friendship
     app.post('/api/friends', FriendsController.createFriendship)
+    app.delete('/api/friends', FriendsController.deleteFriendship)
 
     /*
         ######################

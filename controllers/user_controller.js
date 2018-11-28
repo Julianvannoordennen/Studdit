@@ -9,8 +9,6 @@ function create(req, res) {
     let session = neo.session();
     User.create(user)
         .then(user => {
-
-
             return neoQueries.createUser(session, user)
         }).then(() => {
             session.close();
