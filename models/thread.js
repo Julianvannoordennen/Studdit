@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const VoteSchema = require('./vote');
+const CommentSchema = require('./comment');
 const Schema = mongoose.Schema;
 
 //Thread schema
@@ -16,10 +17,7 @@ const ThreadSchema = new Schema({
         required: true,
         type: String
     },
-    comments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'comment'
-    }],
+    comments: [ CommentSchema ],
     votes: [ VoteSchema ]
 }, {
     toObject: {
@@ -33,18 +31,14 @@ const ThreadSchema = new Schema({
 //Create virtual attributes
 ThreadSchema.virtual('upvotes').get(function() {
     let votes = 0;
-    this.votes.filter(vote => {  if (vote.positive == "true") { votes++;} });
+    this.votes.filter(vote => {  if (vote.positive == "true") { votes++; } });
     return votes;
 });
 
 ThreadSchema.virtual('downvotes').get(function() {
     let votes = 0;
-    this.votes.filter(vote => {  if (vote.positive == "false") { votes++;} });
+    this.votes.filter(vote => {  if (vote.positive == "false") { votes++; } });
     return votes;
-});
-
-ThreadSchema.virtual('votebalance').get(function() {
-    return this.upvotes - this.downvotes;
 });
 
 //Get thread API

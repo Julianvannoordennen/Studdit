@@ -3,7 +3,6 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../app');
 const Thread = mongoose.model('thread');
-const Comment = mongoose.model('comment');
 
 describe('Comment controller', () => {
 
@@ -24,11 +23,10 @@ describe('Comment controller', () => {
     });
 
     it('deletes a comment when using DELETE /api/comment/:id', done => {
-        new Comment ({ username: "username_test", content: "content_test" }).save().then(comment => {
+        new Thread ({ username: "username_test", title: "title_test", content: "content_test", comments: [{ username: "username_test", content: "content_test" }] }).save().then(thread => {
             request(app)
-                .delete(`/api/comment/${comment._id}`)
-                .send({ content: "content_test_put" })
-                .then(() => { return Thread.findOne({_id: comment._id})})
+                .delete(`/api/comment/${thread.comments[0]._id}`)
+                .then(() => { return Thread.findOne({"comments._id": thread.comments[0]._id})})
                 .then(result => {
                     
                 //Assert data
@@ -39,40 +37,40 @@ describe('Comment controller', () => {
     });
 
     it('upvotes a single comment when using PUT /api/comment/:id/upvote', done => {
-        new Comment ({ username: "username_test", content: "content_test" }).save().then(comment => {
+        new Thread ({ username: "username_test", title: "title_test", content: "content_test", comments: [{ username: "username_test", content: "content_test" }] }).save().then(thread => {
             request(app)
-                .put(`/api/comment/${comment._id}/upvote`)
+                .put(`/api/comment/${thread.comments[0]._id}/upvote`)
                 .send({ username: "voter_test" })
-                .then(() => { return Comment.findOne({_id: comment._id})})
+                .then(() => { return Thread.findOne({"comments._id": thread.comments[0]._id})})
                 .then(result => {
                     
                 //Assert data
-                assert(result.votes.length === 1);
-                assert(result.votes[0].username === "voter_test");
-                assert(result.votes[0].positive === "true");
-                assert(result.upvotes === 1);
-                assert(result.downvotes === 0);
+                assert(result.comments[0].votes.length === 1);
+                assert(result.comments[0].votes[0].username === "voter_test");
+                assert(result.comments[0].votes[0].positive === "true");
+                assert(result.comments[0].upvotes === 1);
+                assert(result.comments[0].downvotes === 0);
                 done();
             });   
         });     
     });  
 
-    it('downvotes a single comment when using PUT /api/comment/:id/upvote', done => {
-        new Comment ({ username: "username_test", content: "content_test" }).save().then(comment => {
+    it('upvotes a single comment when using PUT /api/comment/:id/upvote', done => {
+        new Thread ({ username: "username_test", title: "title_test", content: "content_test", comments: [{ username: "username_test", content: "content_test" }] }).save().then(thread => {
             request(app)
-                .put(`/api/comment/${comment._id}/downvote`)
+                .put(`/api/comment/${thread.comments[0]._id}/downvote`)
                 .send({ username: "voter_test" })
-                .then(() => { return Comment.findOne({_id: comment._id})})
+                .then(() => { return Thread.findOne({"comments._id": thread.comments[0]._id})})
                 .then(result => {
                     
                 //Assert data
-                assert(result.votes.length === 1);
-                assert(result.votes[0].username === "voter_test");
-                assert(result.votes[0].positive === "false");
-                assert(result.upvotes === 0);
-                assert(result.downvotes === 1);
+                assert(result.comments[0].votes.length === 1);
+                assert(result.comments[0].votes[0].username === "voter_test");
+                assert(result.comments[0].votes[0].positive === "false");
+                assert(result.comments[0].upvotes === 0);
+                assert(result.comments[0].downvotes === 1);
                 done();
             });   
         });     
-    }); 
+    });
 });

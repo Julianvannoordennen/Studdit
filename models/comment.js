@@ -13,11 +13,7 @@ let CommentSchema = new Schema({
         required: true,
         type: String
     },
-    comments: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'comment',
-        autopopulate: true
-    }],
+    comments: [ this ],
     votes: [ VoteSchema ]
 }, {
     toObject: {
@@ -44,7 +40,4 @@ CommentSchema.virtual('downvotes').get(function() {
 //Use auto populator middleware for comments
 CommentSchema.plugin(autopopulate);
 
-//Get comment API
-const Comment = mongoose.model('comment', CommentSchema);
-
-module.exports = Comment;
+module.exports = CommentSchema;

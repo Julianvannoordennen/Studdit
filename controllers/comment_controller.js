@@ -1,5 +1,6 @@
 const Comment = require('../models/comment');
 const Thread = require('../models/thread');
+const mongoose = require('mongoose');
 
 module.exports = {
 
@@ -9,19 +10,12 @@ module.exports = {
         //Get body and thread id from request
         const { id } = req.params;
         const { body } = req;
-        let result;
 
-        //Create comment
-        Comment.create(body)
+        //Create comment in thread
+        Thread.findOneAndUpdate({ _id: id }, { $push: { comments: body }}, { new: true, runValidators: true })
 
             //Update existing thread with reference
-            .then(comment => { 
-                result = comment;
-                return Thread.findOneAndUpdate({ _id: id }, { $push: { comments: { _id: comment._id }}}, { new: true });
-            })
-
-            //Return created comment
-            .then(() => res.send(result))
+            .then(thread => res.send(thread))
 
             //Error while creating comment in database
             .catch(next);
@@ -58,7 +52,7 @@ module.exports = {
         const { id } = req.params;
 
         //Delete thread by id
-        Comment.findByIdAndDelete(id)
+        Thread.findOneAndUpdate({ 'comments._id': id }, { $pull: { 'comments': { _id: id}}}, { new: true })
 
             //Return deleted comment
             .then(thread => res.send(thread))
@@ -91,10 +85,15 @@ function vote(req, res, next) {
     let { body } = req, { id } = req.params;
 
     //Get comment by id
-    Comment.findById(id, { votes: 1 })
+    Thread.findOne({ 'comments._id': id })
         
         //Check if name exists in comment
-        .then(comment => {
+        .then(thread => { 
+
+            //Get correct comment
+            let comment = thread.comments.id(id);
+            
+            //Get votes that already contain sended username
             let votes = comment.votes.filter(vote => { return vote.username === body.username });
             
             //Check if the vote is inside
@@ -109,7 +108,7 @@ function vote(req, res, next) {
                 comment.votes.push(body);
 
             //Save the document
-            comment.save().then(comment => {
+            thread.save().then(comment => {
                 
                 //Return saved document
                 res.send(comment);
