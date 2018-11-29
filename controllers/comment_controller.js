@@ -1,6 +1,4 @@
-const Comment = require('../models/comment');
 const Thread = require('../models/thread');
-const mongoose = require('mongoose');
 
 module.exports = {
 
@@ -12,38 +10,18 @@ module.exports = {
         const { body } = req;
 
         //Create comment in thread
-        Thread.findOneAndUpdate({ _id: id }, { $push: { comments: body }}, { new: true, runValidators: true })
+        Thread.findOneAndUpdate({ _id: id }, { $push: { comments: body }}, { new: true, runValidators: true }).then(thread => { 
+                
+                //Check if we couldn't find the ID
+                if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" });
 
-            //Update existing thread with reference
-            .then(thread => res.send(thread))
+                //Return thread
+                res.send(thread)
+            })
 
             //Error while creating comment in database
             .catch(next);
     },
-
-    // //Create a new comment inside another comment
-    // createInComment(req, res, next) {
-
-    //     //Get body and comment id from request
-    //     const { id } = req.params;
-    //     const { body } = req;
-    //     let result;
-
-    //     //Create comment
-    //     Comment.create(body)
-
-    //         //Update existing comment with reference
-    //         .then(comment => { 
-    //             result = comment;
-    //             return Comment.findOneAndUpdate({ _id: id }, { $push: { comments: { _id: comment._id }}}, { new: true });
-    //         })
-
-    //         //Return created comment
-    //         .then(() => res.send(result))
-
-    //         //Error while creating comment in database
-    //         .catch(next);
-    // },
 
     //Delete a comment
     delete(req, res, next) {
@@ -52,10 +30,14 @@ module.exports = {
         const { id } = req.params;
 
         //Delete thread by id
-        Thread.findOneAndUpdate({ 'comments._id': id }, { $pull: { 'comments': { _id: id}}}, { new: true })
+        Thread.findOneAndUpdate({ 'comments._id': id }, { $pull: { 'comments': { _id: id}}}, { new: true }).then(thread => {
 
-            //Return deleted comment
-            .then(thread => res.send(thread))
+                //Check if we couldn't find the ID
+                if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" });
+
+                //Return deleted comment
+                res.send(thread)
+            })
                 
             //Error while pulling comment from database
             .catch(next);
@@ -88,7 +70,10 @@ function vote(req, res, next) {
     Thread.findOne({ 'comments._id': id })
         
         //Check if name exists in comment
-        .then(thread => { 
+        .then(thread => {
+
+            //Check if we couldn't find the ID
+            if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" });
 
             //Get correct comment
             let comment = thread.comments.id(id);

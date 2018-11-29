@@ -25,13 +25,14 @@ module.exports = {
         const { id } = req.params;
         
         //Read thread by id
-        Thread.findById(id)
+        Thread.findById(id).then(thread => {
+            
+                //Check if we couldn't find the ID
+                if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" })
 
-            //Load comment references
-            .populate('comments')
-
-            //Return thread
-            .then(thread => res.send(thread))
+                //Return thread
+                res.send(thread)
+            })
 
             //Error while reading thread from database
             .catch(next);
@@ -41,21 +42,19 @@ module.exports = {
     readAll(req, res, next) {
         
         //Read all threads without comments
-        Thread.find({}).sort("-comments")
-        
-        // aggregate([{ 
-        //         $project: {                                                                                                             //Create projection
-        //             username: 1, title: 1, content: 1,                                                                                  //Show default values
-        //             commentcount: { $size: "$comments" },                                                                                //Count array, place value in comments_count attribute
-        //             upvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "true" ]}}}},         //Count votes, filter on positive votes, place in upvotes attribute
-        //             downvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "false"]}}}}        //Count votes, filter on negative votes, place in downvotes attribute
-        //         }       
-        //     },{ 
-        //         $sort: { 
-        //             commentcount: -1                                                                                                    //Sort by comment count
-        //         }
-        //     }
-        // ])
+        Thread.aggregate([{ 
+                $project: {                                                                                                             //Create projection
+                    username: 1, title: 1, content: 1,                                                                                  //Show default values
+                    commentcount: { $size: "$comments" },                                                                                //Count array, place value in comments_count attribute
+                    upvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "true" ]}}}},         //Count votes, filter on positive votes, place in upvotes attribute
+                    downvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "false"]}}}}        //Count votes, filter on negative votes, place in downvotes attribute
+                }       
+            },{ 
+                $sort: { 
+                    commentcount: -1                                                                                                    //Sort by comment count
+                }
+            }
+        ])
 
             //Return threads without commentcount
             .then(threads => { res.send(threads) })
@@ -70,15 +69,15 @@ module.exports = {
         //Get body and id from request
         const { body } = req, { id } = req.params;
         
-        /*  
-            Update thread by id
-            Normally the method returns the unaltered document, the option { new: true } returns the updated document
-            Also, normally the validators won't run when updating, the option { runValidators: true } fixes this issue 
-        */
-        Thread.findOneAndUpdate({ _id: id }, { content: body.content }, { new: true, runValidators: true })
+        //Update thread by id
+        Thread.findOneAndUpdate({ _id: id }, { content: body.content }, { new: true, runValidators: true }).then((thread) => {
+                
+                //Check if we couldn't find the ID
+                if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" });
 
-            //Return updated thread
-            .then((thread) => res.send(thread))
+                //Return updated thread
+                res.send(thread)
+            })
             
             //Error while updating thread from database
             .catch(next);
@@ -91,10 +90,14 @@ module.exports = {
         const { id } = req.params;
         
         //Delete thread by id
-        Thread.findByIdAndDelete(id)
+        Thread.findByIdAndDelete(id).then((thread) => {
 
-            //Return deleted thread
-            .then((thread) => res.send(thread))
+                //Check if we couldn't find the ID
+                if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" });
+
+                //Return deleted thread
+                res.send(thread)
+            })
                 
             //Error while deleting thread from database
             .catch(next);
@@ -124,10 +127,12 @@ function vote(req, res, next) {
     let { body } = req, { id } = req.params;
 
     //Get thread by id
-    Thread.findById(id, { votes: 1 })
-        
-        //Check if name exists in thread
-        .then(thread => {
+    Thread.findById(id, { votes: 1 }).then(thread => {
+
+            //Check if we couldn't find the ID
+            if (thread === null) return Promise.reject({ message: "Couldn't find Id, make sure you entered the correct Id" });
+
+            //Filter on username
             let votes = thread.votes.filter(vote => { return vote.username === body.username });
 
             //Check if the vote is inside
