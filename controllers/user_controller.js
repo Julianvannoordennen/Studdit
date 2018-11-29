@@ -16,8 +16,8 @@ function create(req, res) {
         })
         .catch(err => {
             if (err.code === 11000) {
-                res.status(409);
-                res.send(new ApiError('Gebruiker bestaat al', 409));
+                res.status(422);
+                res.send(new ApiError('Gebruiker bestaat al', 422));
             } else {
                 console.log('error in create user: ' + err);
                 res.status(400);
@@ -51,16 +51,16 @@ function editPassword(req, res, next) {
                     next();
                 })
                 .catch((err) => {
-                    res.status(404)
-                    res.send(new ApiError("User information is invalid", 401));
+                    res.status(422)
+                    res.send(new ApiError("User information is invalid", 422));
                     console.log('Error while trying to edit a user - ' + err);
                     next();
                 })
         })
         .catch((err) => {
             console.log("No user found with password: " + data.currentPassword);
-            res.status(404);
-            res.send(new ApiError("User information is invalid", 401))
+            res.status(422);
+            res.send(new ApiError("User information is invalid", 422))
             next();
         });
 }
@@ -76,8 +76,8 @@ function deleteUser(req, res, next) {
         })
         .then((user) => {
             if (user.password != data.password) {
-                res.status(404);
-                res.send(new ApiResponse("No user found with this password and id", 401))
+                res.status(422);
+                res.send(new ApiResponse("No user found with this password and id", 422))
                 next();
             } else {
 
@@ -95,8 +95,8 @@ function deleteUser(req, res, next) {
                         next()
                     })
                     .catch((err) => {
-                        res.status(404)
-                        res.send(new ApiError("User information is invalideee", 401));
+                        res.status(422)
+                        res.send(new ApiError("User information is invalideee", 422));
                         console.log("Error while tying to delete a user - " + err);
                         next();
                     })
@@ -104,8 +104,8 @@ function deleteUser(req, res, next) {
             }
 
         }).catch((err) => {
-            res.status(404)
-            res.send(new ApiError("User information is invalid", 401));
+            res.status(422)
+            res.send(new ApiError("User information is invalid", 422));
             console.log("Error while tying to delete a user - " + err);
             next();
         })

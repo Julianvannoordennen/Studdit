@@ -1,24 +1,27 @@
 
 function createFriendship(session, userA, userB){
 
-    return session.run('MATCH (personA: Person {name: $nameA}), (personB: Person {name: $nameB}) ' +
-                        'CREATE (personA)-[f:FRIENDS]->(personB) ' +
-                        'CREATE (personB)-[f:FRIENDS]->(personA) ' +
-                        'RETURN personA, r, personB',
-                        {
-                            nameA: userA.name,
-                            nameB: userB.name
+    return session.run('MATCH(u:Person), (f:Person) ' +
+                        'WHERE u.name = $username AND f.name = $friendname ' +
+                        'CREATE UNIQUE (u)-[r:FRIENDS]->(f)' +
+                        'RETURN u, r, f',
+    {
+                            username: userA,
+                            friendname: userB
                         });
 }
 
+
+
 function deleteFriendship(session, userA, userB){
 
-    return session.run('MATCH (pA:Person {name:$nameA})-[f:FRIENDS]-(pB:Person {name:$nameB})' + 
-                        'DELETE r' +
-                        'RETURN pA, pB',
+    return session.run('MATCH(u:Person)-[r:FRIENDS]-(f:Person) ' + 
+                        'WHERE u.name = $username AND f.name = $friendname ' +
+                        'DELETE r ' +
+                        'RETURN u, f',
                         {
-                            nameA: userA.name,
-                            nameB: userB.name
+                            username: userA,
+                            friendname: userB
                         })
 }
 
