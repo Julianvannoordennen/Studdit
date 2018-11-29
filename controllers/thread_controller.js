@@ -41,19 +41,21 @@ module.exports = {
     readAll(req, res, next) {
         
         //Read all threads without comments
-        Thread.aggregate([{ 
-                $project: {                                                                                                             //Create projection
-                    username: 1, title: 1, content: 1,                                                                                  //Show default values
-                    commentcount: { $size: "$comments" },                                                                               //Count array, place value in comments_count attribute
-                    upvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "true" ]}}}},         //Count votes, filter on positive votes, place in upvotes attribute
-                    downvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "false"]}}}}        //Count votes, filter on negative votes, place in downvotes attribute
-                }       
-            },{ 
-                $sort: { 
-                    commentcount: -1                                                                                                    //Sort by comment count
-                }
-            }
-        ])
+        Thread.find({}).sort("-comments")
+        
+        // aggregate([{ 
+        //         $project: {                                                                                                             //Create projection
+        //             username: 1, title: 1, content: 1,                                                                                  //Show default values
+        //             commentcount: { $size: "$comments" },                                                                                //Count array, place value in comments_count attribute
+        //             upvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "true" ]}}}},         //Count votes, filter on positive votes, place in upvotes attribute
+        //             downvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "false"]}}}}        //Count votes, filter on negative votes, place in downvotes attribute
+        //         }       
+        //     },{ 
+        //         $sort: { 
+        //             commentcount: -1                                                                                                    //Sort by comment count
+        //         }
+        //     }
+        // ])
 
             //Return threads without commentcount
             .then(threads => { res.send(threads) })
