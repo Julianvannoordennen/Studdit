@@ -1,24 +1,22 @@
 const mongoose = require('mongoose');
 
+//Execute this middleware before each test
 before(done => {
+
+    //Connect to local test database
     mongoose.connect('mongodb://localhost/studdit_test', { useNewUrlParser: true });
     mongoose.connection
+
+        //Finish when connection has been succesfully established
         .once('open', () => done())
-        .on('error', error => {
-        console.warn('Warning', error)
-    });
+
+        //Error
+        .on('error', error => console.warn('Warning', error));
 });
 
-/*
-
-    ###############################
-    ### Collection Wipe Example ###
-    ###############################
-
-    beforeEach(done => {
-        const { drivers } = mongoose.connection.collections;
-        drivers.drop()
-            .then(() => done())
-            .catch(() => done());
-    });
-*/
+beforeEach(done => {
+    const { threads } = mongoose.connection.collections;
+    threads.drop()
+        .then(() => done())
+        .catch(() => done());
+});
