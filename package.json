@@ -14,7 +14,7 @@
     "express": "^4.16.4",
     "mocha": "^5.2.0",
     "mongoose": "^5.3.11",
-    "mongoose-autopopulate": "^0.9.0",
+    "neo4j-driver": "^1.7.2",
     "nodemon": "^1.18.6",
     "supertest": "^3.3.0"
   }

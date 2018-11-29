@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const autopopulate = require('mongoose-autopopulate');
 const VoteSchema = require('./vote');
 const Schema = mongoose.Schema;
 
@@ -36,8 +35,5 @@ CommentSchema.virtual('downvotes').get(function() {
     this.votes.filter(vote => {  if (vote.positive == "false") { votes++;} });
     return votes;
 });
-
-//Use auto populator middleware for comments
-CommentSchema.plugin(autopopulate);
 
 module.exports = CommentSchema;

@@ -1,3 +1,5 @@
+const UsersController = require('../controllers/user_controller')
+const FriendsController = require('../controllers/friends_controller')
 const CommentController = require('../controllers/comment_controller.js');
 const ThreadController = require('../controllers/thread_controller.js');
 
@@ -11,6 +13,15 @@ module.exports = (app) => {
     app.delete(     '/api/thread/:id'                   , ThreadController.delete);
     app.put(        '/api/thread/:id/upvote'            , ThreadController.upVote);
     app.put(        '/api/thread/:id/downvote'          , ThreadController.downVote);
+
+    //User routes
+    app.post(       '/api/users'                        , UsersController.create)
+    app.put(        '/api/users'                        , UsersController.editPassword)
+    app.delete(     '/api/users'                        , UsersController.deleteUser)
+
+    //Friendship routes
+    app.post(       '/api/friends'                      , FriendsController.createFriendship)
+    app.delete(     '/api/friends'                      , FriendsController.deleteFriendship)
 
     //Comment routes
     app.post(       '/api/thread/:id/comment'           , CommentController.createInThread);    
