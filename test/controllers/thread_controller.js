@@ -3,6 +3,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../app');
 const Thread = mongoose.model('thread');
+const neo = require('../../neo4j_setup')
 
 describe('Thread controller', () => {
 
@@ -124,4 +125,21 @@ describe('Thread controller', () => {
             });   
         });     
     }); 
+
+    it('gets thread from friend with relation depth of 1 when using POST /api/thread/friends', done => {
+        let session = neo.session();
+        session.run('MERGE (p:Person {name: $user1}) MERGE (f:Person {name: $user2}) ', { user1: 'username_test', user2: 'username_test2' })
+            .then(() => { return session.run('MATCH(u:Person), (f:Person) WHERE u.name = $username AND f.name = $friendname CREATE UNIQUE (u)-[r:FRIENDS]->(f) RETURN u, r, f', { username: 'username_test', friendname: 'username_test2' })})
+            .then(() => { return new Thread ({ username: "username_test", title: "title_test", content: "content_test" }).save()})
+            .then(() => { return request(app).post(`/api/thread/friends`).send({ username: "username_test2", depth: 1 }) })
+            .then(result => {
+                    
+            // Assert data
+            const { body } = result;
+            assert(body[0].username === 'username_test');
+            assert(body[0].title === 'title_test');
+            assert(body[0].content === 'content_test');
+            done();
+        });   
+    });
 });
