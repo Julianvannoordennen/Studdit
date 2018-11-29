@@ -51,16 +51,16 @@ function editPassword(req, res, next) {
                     next();
                 })
                 .catch((err) => {
-                    res.status(422)
-                    res.send(new ApiError("User information is invalid", 422));
+                    res.status(401)
+                    res.send(new ApiError("User information is invalid", 401));
                     console.log('Error while trying to edit a user - ' + err);
                     next();
                 })
         })
         .catch((err) => {
             console.log("No user found with password: " + data.currentPassword);
-            res.status(422);
-            res.send(new ApiError("User information is invalid", 422))
+            res.status(401);
+            res.send(new ApiError("User information is invalid", 401))
             next();
         });
 }
@@ -76,8 +76,8 @@ function deleteUser(req, res, next) {
         })
         .then((user) => {
             if (user.password != data.password) {
-                res.status(422);
-                res.send(new ApiResponse("No user found with this password and id", 422))
+                res.status(401);
+                res.send(new ApiResponse("No user found with this password and id", 401))
                 next();
             } else {
 
@@ -96,7 +96,7 @@ function deleteUser(req, res, next) {
                     })
                     .catch((err) => {
                         res.status(422)
-                        res.send(new ApiError("User information is invalideee", 422));
+                        res.send(new ApiError("User information is invalid", 422));
                         console.log("Error while tying to delete a user - " + err);
                         next();
                     })
