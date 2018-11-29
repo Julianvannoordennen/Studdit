@@ -13,14 +13,15 @@ mongoose.Promise = global.Promise;
 if (process.env.NODE_ENV !== 'test') {
     console.log(`Variable NODE_ENV is ${process.env.NODE_ENV}, application runs with the default database`);
     mongoose.connect(process.env.STUDDIT_CONNECTION_URL, { useNewUrlParser: true })
+        
+    neo.driver = neo4j.driver(
+        'bolt://hobby-miglodfghkjagbkedgoebfbl.dbs.graphenedb.com:24786', 
+        neo4j.auth.basic('new-user', 'b.s2Rdsjueq3Ui.jmeyP12EhOYHIATF')
+    );
+
 } else {
     console.log(`Variable NODE_ENV is ${process.env.NODE_ENV}, application runs with the test database`);
 }
-
-neo.driver = neo4j.driver(
-    'bolt://hobby-miglodfghkjagbkedgoebfbl.dbs.graphenedb.com:24786', 
-    neo4j.auth.basic('new-user', 'b.s2Rdsjueq3Ui.jmeyP12EhOYHIATF')
-);
 
 process.on('exit', function() {
     neo.driver.close();

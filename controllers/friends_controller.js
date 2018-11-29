@@ -1,6 +1,6 @@
 const neo = require('../neo4j_setup');
 const neoQueries = require('../models/friendship_neo');
-const ApiError = require('../models/ApiError');
+const ApiError = require('../models/api_error');
 const User = require('../models/user');
 
 function createFriendship(req, res){

@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const neo = require('../neo4j_setup');
 const neoQueries = require('../models/user_neo');
-const ApiError = require('../models/ApiError')
+const ApiError = require('../models/api_error')
 
 // create a new user
 function create(req, res) {
