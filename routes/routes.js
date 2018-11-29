@@ -9,6 +9,7 @@ module.exports = (app) => {
     app.post(       '/api/thread'                       , ThreadController.create);
     app.get(        '/api/thread/:id'                   , ThreadController.readOne);
     app.get(        '/api/thread'                       , ThreadController.readAll);
+    app.post(       '/api/thread/friends'               , ThreadController.readFriends);
     app.put(        '/api/thread/:id'                   , ThreadController.update);
     app.delete(     '/api/thread/:id'                   , ThreadController.delete);
     app.put(        '/api/thread/:id/upvote'            , ThreadController.upVote);

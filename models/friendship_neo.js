@@ -11,8 +11,6 @@ function createFriendship(session, userA, userB){
                         });
 }
 
-
-
 function deleteFriendship(session, userA, userB){
 
     return session.run('MATCH(u:Person)-[r:FRIENDS]-(f:Person) ' + 
@@ -25,7 +23,18 @@ function deleteFriendship(session, userA, userB){
                         })
 }
 
+function getFriends(session, depth, userA) {
+
+    return session.run("MATCH(p:Person)-[r:FRIENDS*1.." + depth + "]-(n:Person) " +
+                        "WHERE p.name = $username " +
+                        "RETURN DISTINCT n",
+                        {
+                            username: userA
+                        })
+}
+
 module.exports = {
     createFriendship: createFriendship,
-    deleteFriendship: deleteFriendship
+    deleteFriendship: deleteFriendship,
+    getFriends: getFriends
 }

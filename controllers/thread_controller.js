@@ -1,4 +1,6 @@
 const Thread = require('../models/thread');
+const neo = require('../neo4j_setup');
+const neoQueries = require('../models/friendship_neo');
 
 module.exports = {
 
@@ -38,6 +40,40 @@ module.exports = {
             .catch(next);
     },
 
+    //Read threads from friends
+    readFriends(req, res, next) {
+
+        //Get body from request and neo session
+        const { body } = req, session = neo.session();
+
+        //Check values in body
+        if ( body.depth === undefined || body.username === undefined ) next({ message: "Body is incorrect, make sure you entered a valid body" });
+
+        else {
+
+            //Create neo query
+            neoQueries.getFriends(session, body.depth, body.username)
+            
+                //Execute query
+                .then(result => {
+
+                    //Filter names from result
+                    let results = [];
+                    result.records.forEach(person => results.push(person._fields[0].properties.name));
+                    if (body.depth === 1) results.push( body.username );
+                    
+                    //Read all threads without comments
+                    return Thread.find({ username: { $in: results }}, { comments: 0 })
+                })
+
+                //Return threads without commentcount
+                .then(threads => { res.send(threads) })
+                
+                //Error while reading threads from database
+                .catch(next);
+        }      
+    },
+
     //Read all threads
     readAll(req, res, next) {
         
@@ -45,7 +81,7 @@ module.exports = {
         Thread.aggregate([{ 
                 $project: {                                                                                                             //Create projection
                     username: 1, title: 1, content: 1,                                                                                  //Show default values
-                    commentcount: { $size: "$comments" },                                                                                //Count array, place value in comments_count attribute
+                    commentcount: { $size: "$comments" },                                                                               //Count array, place value in comments_count attribute
                     upvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "true" ]}}}},         //Count votes, filter on positive votes, place in upvotes attribute
                     downvotes: { $size: { $filter: { input: "$votes", as: "vote", cond: { $eq: [ "$$vote.positive", "false"]}}}}        //Count votes, filter on negative votes, place in downvotes attribute
                 }       
